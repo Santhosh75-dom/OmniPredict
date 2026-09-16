@@ -12,7 +12,7 @@ import {
 
 export default function TriageDashboard({ patient, selectedPatientId, setSelectedPatientId }) {
   const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState('/he_biopsy_spatial_slide.jpg');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [triageResult, setTriageResult] = useState(null);
 

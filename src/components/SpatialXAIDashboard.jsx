@@ -55,44 +55,58 @@ export default function SpatialXAIDashboard({ patient }) {
               </div>
             </div>
 
-            <div className="relative w-full h-80 rounded-xl overflow-hidden border border-slate-200 bg-slate-900 shadow-inner flex items-center justify-center">
-              <svg className="w-full h-full object-cover" viewBox="0 0 500 350">
-                <rect width="500" height="350" fill="#fce7f3" />
-                <path d="M20,30 Q120,180 220,50 T420,120 T320,310 T80,260 Z" fill="#db2777" opacity="0.45" />
-                <path d="M80,60 Q210,30 360,110 T260,290 T50,180 Z" fill="#9333ea" opacity="0.4" />
-                <circle cx="160" cy="140" r="28" fill="#581c87" opacity="0.85" />
-                <circle cx="280" cy="190" r="34" fill="#3b0764" opacity="0.9" />
-                <circle cx="210" cy="220" r="24" fill="#4c1d95" opacity="0.85" />
-                <circle cx="340" cy="120" r="22" fill="#581c87" opacity="0.8" />
-                <circle cx="110" cy="210" r="20" fill="#3b0764" opacity="0.8" />
-                <circle cx="280" cy="190" r="12" fill="#be185d" stroke="#f43f5e" strokeWidth="2" />
-                <circle cx="160" cy="140" r="10" fill="#be185d" stroke="#f43f5e" strokeWidth="2" />
+            {/* High-Res Pathology Slide Container with Grad-CAM Heatmap Overlay */}
+            <div className="relative w-full h-80 rounded-xl overflow-hidden border border-slate-200 bg-slate-950 shadow-inner flex items-center justify-center group">
+              
+              {/* Real H&E Stained Biopsy Slide Photo */}
+              <img
+                src="/he_biopsy_spatial_slide.jpg"
+                alt="Real H&E Biopsy Pathology Slide"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
 
-                {viewMode === 'heatmap' && (
-                  <g>
+              {/* Grad-CAM Heatmap Overlay Layer */}
+              {viewMode === 'heatmap' && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <svg className="w-full h-full" viewBox="0 0 500 350" preserveAspectRatio="none">
                     <defs>
-                      <radialGradient id="gradCamHot" cx="50%" cy="50%" r="50%">
+                      <radialGradient id="gradCamHotPrimary" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#ef4444" stopOpacity="0.88" />
+                        <stop offset="35%" stopColor="#f97316" stopOpacity="0.75" />
+                        <stop offset="65%" stopColor="#eab308" stopOpacity="0.55" />
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                      </radialGradient>
+                      <radialGradient id="gradCamHotSecondary" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stopColor="#ef4444" stopOpacity="0.85" />
                         <stop offset="40%" stopColor="#f97316" stopOpacity="0.7" />
-                        <stop offset="70%" stopColor="#eab308" stopOpacity="0.5" />
+                        <stop offset="70%" stopColor="#eab308" stopOpacity="0.45" />
                         <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
                       </radialGradient>
                     </defs>
-                    <circle cx="270" cy="185" r="90" fill="url(#gradCamHot)" />
-                    <circle cx="165" cy="145" r="70" fill="url(#gradCamHot)" />
-                    <rect x="110" y="90" width="230" height="150" rx="12" fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="6 4" />
-                    <text x="120" y="110" fill="#ef4444" fontSize="11" fontWeight="bold" fontFamily="monospace">
-                      HIGH ATTENTION FOCUS ({spatial.focusPercentage}%)
-                    </text>
-                  </g>
-                )}
-              </svg>
 
-              <div className="absolute top-3 left-3 bg-slate-900/80 text-white font-mono text-[10px] px-2.5 py-1 rounded border border-slate-700 backdrop-blur-xs">
-                {viewMode === 'heatmap' ? 'MODE: GRAD-CAM ATTENTION MAP' : 'MODE: RAW H&E SLIDE (40x MAG)'}
+                    {/* Heatmap Hotspot 1: High Mitotic Cluster (Right Panel) */}
+                    <ellipse cx="370" cy="180" rx="110" ry="120" fill="url(#gradCamHotPrimary)" />
+                    
+                    {/* Heatmap Hotspot 2: Dense Stroma-Tumor Interface (Left Panel) */}
+                    <ellipse cx="140" cy="110" rx="95" ry="85" fill="url(#gradCamHotSecondary)" />
+
+                    {/* Spatial Bounding Attention Focus Contour */}
+                    <rect x="250" y="55" width="220" height="250" rx="14" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="6 4" />
+                    <text x="260" y="80" fill="#ffffff" fontSize="11" fontWeight="bold" fontFamily="monospace" className="drop-shadow-md">
+                      PRIMARY ATTENTION FOCUS ({spatial.focusPercentage}%)
+                    </text>
+                  </svg>
+                </div>
+              )}
+
+              {/* Mode Badge Overlay */}
+              <div className="absolute top-3 left-3 bg-slate-900/85 text-white font-mono text-[10px] px-2.5 py-1 rounded border border-slate-700 shadow-sm backdrop-blur-xs flex items-center space-x-1.5">
+                <span className={`w-2 h-2 rounded-full ${viewMode === 'heatmap' ? 'bg-red-500 animate-pulse' : 'bg-blue-400'}`}></span>
+                <span>{viewMode === 'heatmap' ? 'MODE: GRAD-CAM ATTENTION MAP (72% FOCUS)' : 'MODE: RAW H&E SLIDE (40x MAG)'}</span>
               </div>
             </div>
 
+            {/* Spatial Annotation Callout Box */}
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-1">
               <div className="flex items-center space-x-2 text-xs font-bold text-slate-800">
                 <Sparkles className="w-4 h-4 text-blue-600" />
